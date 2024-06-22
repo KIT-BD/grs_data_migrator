@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "complain_history")
+@Table(name = "complain_history", uniqueConstraints = @UniqueConstraint(columnNames={"complain_id", "office_id", "current_status"}))
 public class ComplainHistory implements Serializable {
 
     @Id

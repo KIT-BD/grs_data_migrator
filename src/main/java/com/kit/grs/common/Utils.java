@@ -5,6 +5,13 @@ import java.math.BigInteger;
 
 public class Utils {
 
+    public static final String INDEX_MOVEMENT = "index_complaint_movements";
+    public static final String INDEX_COMPLAINTS = "index_complaints";
+
+    public static final String[] complain_fields = new String[] {
+            "custom_layer", "id", "layer_level", "medium_of_submission", "office_id","office_origin", "self_motivated", "tracking_number", "grievance_type"
+    };
+
     public static boolean valueExists(Object[] values, int index) {
         if (values == null || values.length ==0) {
             return false;
@@ -16,6 +23,24 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static boolean isInList(String value, String... values) {
+        if (value == null) {
+            return false;
+        }
+        if (values == null) {
+            return false;
+        }
+        for (String val : values) {
+            if (val == null) {
+                continue;
+            }
+            if (val.equalsIgnoreCase(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Long getLongValue(Object value) {
