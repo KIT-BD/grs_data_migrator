@@ -121,7 +121,7 @@ public class GrievanceMigratorESService {
                 continue;
             }
             if (Utils.isInList(movements.get(j).getAction(), "APPEAL_CLOSED_ACCUSATION_INCORRECT","APPEAL_CLOSED_ACCUSATION_PROVED", "APPEAL_CLOSED_OTHERS")) {
-                histories.add(getHistory(complain, "CLOSED", movements.get(j).getCreated_at(), movements.get(j).getModified_at(), movements.get(j).getTo_office_id()));
+                histories.add(getHistory(complain, "APPEAL_CLOSED", movements.get(j).getCreated_at(), movements.get(j).getModified_at(), movements.get(j).getTo_office_id()));
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("APPEAL")) && his.getClosedAt() == null) {
                         his.setClosedAt(movements.get(j).getModified_at());
