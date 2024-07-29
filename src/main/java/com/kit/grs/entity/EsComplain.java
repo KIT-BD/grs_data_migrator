@@ -17,7 +17,7 @@ public class EsComplain implements Serializable {
     Long id;
     String current_status;
     Long custom_layer;
-    String grievance_type;
+    String complaint_type;
     Long layer_level;
     String medium_of_submission;
     Long office_id;

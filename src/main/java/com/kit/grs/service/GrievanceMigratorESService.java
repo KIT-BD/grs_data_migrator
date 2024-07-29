@@ -150,7 +150,7 @@ public class GrievanceMigratorESService {
 
     private ComplainHistory getHistory(EsComplain complain, String status, Date createdAt, Date closedAt, Long officeId) {
         ComplainHistory history = new ComplainHistory();
-        history.setGrievanceType(complain.getGrievance_type());
+        history.setGrievanceType(complain.getComplaint_type());
         history.setComplainId(complain.getId());
         history.setCreatedAt(createdAt);
         history.setClosedAt(closedAt);
