@@ -17,7 +17,6 @@ public class BaseEntityManager {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
     public <T> T  findSingleByQuery(String nativeQuery,Map<String, Object> params) {
         Query query = entityManager.createNativeQuery(nativeQuery);
         if (params != null && params.size() >0) {
@@ -30,9 +29,33 @@ public class BaseEntityManager {
         }
     }
 
+    public <T> T  findSingleByQuery(String nativeQuery,Class<T> entity,Map<String, Object> params) {
+        Query query = entityManager.createNativeQuery(nativeQuery, entity);
+        if (params != null && params.size() >0) {
+            params.forEach(query::setParameter);
+        }
+        query.setFirstResult(0).setMaxResults(1);
+        try {
+            List<T> list = query.getResultList();
+            if (list.size() >0) {
+                return list.get(0);
+            }
+            return null;
+        } catch (Exception ne) {
+            return null;
+        }
+    }
+
     @Transactional
     public <T> T save(T entity) {
         entityManager.persist(entity);
+        entityManager.flush();
+        return entity;
+    }
+
+    @Transactional
+    public <T> T delete(T entity) {
+        entityManager.remove(entity);
         entityManager.flush();
         return entity;
     }
@@ -42,5 +65,12 @@ public class BaseEntityManager {
         entityManager.merge(entity);
         entityManager.flush();
         return entity;
+    }
+
+    @Transactional
+    public boolean deleteBySql(String sql) {
+        Query query = entityManager.createNativeQuery(sql);
+        query.executeUpdate();
+        return true;
     }
 }

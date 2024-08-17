@@ -23,9 +23,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -102,9 +100,10 @@ public class GrievanceMigratorESService {
 
             if (Utils.isInList(movements.get(j).getAction(), "CLOSED_ACCUSATION_INCORRECT", "CLOSED_ACCUSATION_PROVED", "CLOSED_ANSWER_OK", "CLOSED_OTHERS", "REJECTED")) {
                 for (ComplainHistory his : histories) {
-                    if ((his.getCurrentStatus().equalsIgnoreCase("NEW")) && his.getClosedAt() == null) {
+                    if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("RETAKE")) && his.getClosedAt() == null) {
                         his.setClosedAt(movements.get(j).getModified_at());
                     }
+
                 }
 
                 histories.add(getHistory(complain, "CLOSED", movements.get(j).getModified_at(), movements.get(j).getModified_at(), movements.get(j).getTo_office_id()));
@@ -132,6 +131,16 @@ public class GrievanceMigratorESService {
             if (movements.get(j).getAction().equalsIgnoreCase("CELL_NEW")) {
                 histories.add(getHistory(complain, "NEW", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
             }
+
+            if (movements.get(j).getAction().equalsIgnoreCase("RETAKE")) {
+                for (int m=0;m<histories.size();m++) {
+                    if (histories.get(m).getCurrentStatus().equalsIgnoreCase("NEW") && histories.get(m).getOfficeId().equals(movements.get(j).getFrom_office_id())) {
+                        histories.get(m).setClosedAt(movements.get(j).getCreated_at());
+                    }
+                }
+                histories.add(getHistory(complain, "RETAKE", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
+            }
+
         }
 
         if (histories.size() >0) {
@@ -184,6 +193,7 @@ public class GrievanceMigratorESService {
         should.should(QueryBuilders.matchQuery("action", "CLOSED_OTHERS").operator(Operator.AND));
         should.should(QueryBuilders.matchQuery("action", "FORWARD_TO_ANOTHER_OFFICE").operator(Operator.AND));
         should.should(QueryBuilders.matchQuery("action", "REJECTED"));
+        should.should(QueryBuilders.matchQuery("action", "RETAKE"));
         should.minimumShouldMatch(1);
 
         queryBuilders.must(should);
