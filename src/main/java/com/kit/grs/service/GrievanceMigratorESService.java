@@ -90,23 +90,23 @@ public class GrievanceMigratorESService {
 
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getModified_at());
+                        his.setClosedAt(movements.get(j).getCreated_at());
                     }
                 }
-                histories.add(getHistory(complain, "FORWARDED_OUT", movements.get(j).getModified_at(), movements.get(j).getModified_at(), movements.get(j).getFrom_office_id()));
-                histories.add(getHistory(complain, "NEW", movements.get(j).getModified_at(), null, movements.get(j).getTo_office_id()));
+                histories.add(getHistory(complain, "FORWARDED_OUT", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getFrom_office_id()));
+                histories.add(getHistory(complain, "NEW", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
                 continue;
             }
 
             if (Utils.isInList(movements.get(j).getAction(), "CLOSED_ACCUSATION_INCORRECT", "CLOSED_ACCUSATION_PROVED", "CLOSED_ANSWER_OK", "CLOSED_OTHERS", "REJECTED")) {
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("RETAKE")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getModified_at());
+                        his.setClosedAt(movements.get(j).getCreated_at());
                     }
 
                 }
 
-                histories.add(getHistory(complain, "CLOSED", movements.get(j).getModified_at(), movements.get(j).getModified_at(), movements.get(j).getTo_office_id()));
+                histories.add(getHistory(complain, "CLOSED", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getTo_office_id()));
                 continue;
             }
 
@@ -120,10 +120,10 @@ public class GrievanceMigratorESService {
                 continue;
             }
             if (Utils.isInList(movements.get(j).getAction(), "APPEAL_CLOSED_ACCUSATION_INCORRECT","APPEAL_CLOSED_ACCUSATION_PROVED", "APPEAL_CLOSED_OTHERS")) {
-                histories.add(getHistory(complain, "APPEAL_CLOSED", movements.get(j).getCreated_at(), movements.get(j).getModified_at(), movements.get(j).getTo_office_id()));
+                histories.add(getHistory(complain, "APPEAL_CLOSED", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getTo_office_id()));
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("APPEAL")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getModified_at());
+                        his.setClosedAt(movements.get(j).getCreated_at());
                     }
                 }
                 continue;
@@ -159,7 +159,7 @@ public class GrievanceMigratorESService {
 
     private ComplainHistory getHistory(EsComplain complain, String status, Date createdAt, Date closedAt, Long officeId) {
         ComplainHistory history = new ComplainHistory();
-        history.setGrievanceType(complain.getComplaint_type());
+        history.setGrievanceType(complain.getGrievance_type());
         history.setComplainId(complain.getId());
         history.setCreatedAt(createdAt);
         history.setClosedAt(closedAt);
