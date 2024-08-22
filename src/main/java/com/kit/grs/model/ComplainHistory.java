@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.YearMonth;
 import java.util.Date;
 
 @Getter
@@ -15,7 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "complain_history", uniqueConstraints = @UniqueConstraint(columnNames={"complain_id", "office_id", "current_status"}))
+@Table(name = "complain_history", uniqueConstraints = @UniqueConstraint(columnNames={"complain_id", "office_id", "current_status", "created_year_month_day"}))
 public class ComplainHistory implements Serializable {
 
     @Id
@@ -46,4 +47,6 @@ public class ComplainHistory implements Serializable {
     Date createdAt;
     @Column(name = "closed_at")
     Date closedAt;
+    @Column(name = "created_year_month_day")
+    private String createdYearMonthDay;
 }

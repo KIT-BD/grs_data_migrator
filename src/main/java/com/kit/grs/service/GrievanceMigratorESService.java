@@ -23,6 +23,9 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.*;
 
 @Slf4j
@@ -174,6 +177,8 @@ public class GrievanceMigratorESService {
         history.setOfficeOrigin(complain.getOffice_origin());
         history.setSelfMotivated(complain.getSelf_motivated());
         history.setTrackingNumber(complain.getTracking_number());
+        history.setCreatedYearMonthDay(new SimpleDateFormat("yyyy-MM-dd").format(createdAt));
+
         return history;
     }
 
