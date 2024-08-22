@@ -200,6 +200,7 @@ public class GrievanceMigratorESService {
 
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(queryBuilders);
+        sourceBuilder.size(10000);
         sourceBuilder.sort("id", SortOrder.ASC);
 
         SearchRequest request = new SearchRequest(Utils.INDEX_MOVEMENT);
