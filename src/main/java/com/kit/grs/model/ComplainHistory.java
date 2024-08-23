@@ -24,7 +24,7 @@ public class ComplainHistory implements Serializable {
     Long id;
     @Column(name = "complain_id")
     Long complainId;
-    @Column(name = "tracking_number")
+    @Column(name = "tracking_number", columnDefinition = "VARCHAR(20) CHARACTER SET utf8 collate utf8_bin")
     String trackingNumber;
     @Column(name = "current_status")
     String currentStatus;

@@ -92,6 +92,9 @@ public class GrievanceMigratorESService {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW")) && his.getClosedAt() == null) {
                         his.setClosedAt(movements.get(j).getCreated_at());
                     }
+                    if ((his.getCurrentStatus().equalsIgnoreCase("RETAKE")) && his.getClosedAt() == null) {
+                        his.setClosedAt(movements.get(j).getCreated_at());
+                    }
                 }
                 histories.add(getHistory(complain, "FORWARDED_OUT", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getFrom_office_id()));
                 histories.add(getHistory(complain, "NEW", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
