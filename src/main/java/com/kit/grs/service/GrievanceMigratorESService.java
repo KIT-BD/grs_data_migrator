@@ -81,6 +81,9 @@ public class GrievanceMigratorESService {
         }
 
         List<ComplainHistory> histories = new ArrayList<>();
+
+        boolean flagClosedAt = false;
+
         for (int j=0;j<movements.size();j++) {
             if (movements.get(j) == null) {
                 continue;
@@ -139,11 +142,15 @@ public class GrievanceMigratorESService {
             }
 
             if (movements.get(j).getAction().equalsIgnoreCase("RETAKE")) {
-                for (int m=0;m<histories.size();m++) {
-                    if (histories.get(m).getCurrentStatus().equalsIgnoreCase("NEW") && histories.get(m).getOfficeId().equals(movements.get(j).getFrom_office_id())) {
-                        histories.get(m).setClosedAt(movements.get(j).getCreated_at());
+                if(!flagClosedAt){
+                    for (int m=0;m<histories.size();m++) {
+                        if (histories.get(m).getCurrentStatus().equalsIgnoreCase("NEW") && histories.get(m).getOfficeId().equals(movements.get(j).getTo_office_id())) {
+                            histories.get(m).setClosedAt(movements.get(j).getCreated_at());
+                            flagClosedAt = true;
+                        }
                     }
                 }
+
                 histories.add(getHistory(complain, "RETAKE", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
             }
 
@@ -172,7 +179,12 @@ public class GrievanceMigratorESService {
         history.setCurrentStatus(status);
         history.setCustomLayer(complain.getCustom_layer());
         history.setLayerLevel(complain.getLayer_level());
-        history.setMediumOfSubmission(complain.getMedium_of_submission());
+        if(complain.getMedium_of_submission() != null && complain.getMedium_of_submission().length() > 0){
+            history.setMediumOfSubmission(complain.getMedium_of_submission());
+        }
+        else {
+            history.setMediumOfSubmission("ONLINE");
+        }
         history.setOfficeId(officeId);
         history.setOfficeOrigin(complain.getOffice_origin());
         history.setSelfMotivated(complain.getSelf_motivated());
