@@ -2,6 +2,7 @@ package com.kit.grs.dto;
 
 
 import com.kit.grs.common.Utils;
+import com.kit.grs.util.CalendarUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,11 +63,13 @@ public class ComplainHistory implements Serializable {
             if (Utils.valueExists(model, 9)) {
                 this.selfMotivated = Utils.getLongValue(model[9]);
             }
+            // Handle createdAt field and set time to 00:00:00
             if (Utils.valueExists(model, 10)) {
-                this.createdAt = (Date) model[10];
+                this.createdAt = CalendarUtil.truncateDate((Date) model[10]);
             }
+            // Handle closedAt field and set time to 00:00:00
             if (Utils.valueExists(model, 11)) {
-                this.closedAt = (Date) model[11];
+                this.closedAt = CalendarUtil.truncateDate((Date) model[11]);
             }
         }
     }
