@@ -4,6 +4,7 @@ package com.kit.grs.service;
 import com.kit.grs.common.Utils;
 import com.kit.grs.dto.ComplainHistory;
 import com.kit.grs.repository.BaseEntityManager;
+import com.kit.grs.util.CalendarUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -108,7 +109,7 @@ public class GrievanceMigratorService {
             t.printStackTrace();
         }
         if (newHistory != null && closedHistory != null) {
-            newHistory.setClosedAt(closedHistory.getCreatedAt());
+            newHistory.setClosedAt(CalendarUtil.truncateDate(closedHistory.getCreatedAt()));
             entityManager.merge(newHistory);
         }
         if (closedHistory != null) {
@@ -165,7 +166,7 @@ public class GrievanceMigratorService {
         }
 
         if (newAppeal != null && appealClosed != null) {
-            newAppeal.setClosedAt(appealClosed.getCreatedAt());
+            newAppeal.setClosedAt(CalendarUtil.truncateDate(appealClosed.getCreatedAt()));
         }
 
         sql = "select com.id, com.tracking_number, 'CELL_NEW' as current_status, com.office_id,ol.layer_level,\n" +

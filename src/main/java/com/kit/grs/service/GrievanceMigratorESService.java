@@ -6,6 +6,7 @@ import com.kit.grs.entity.EsComplain;
 import com.kit.grs.entity.EsMovement;
 import com.kit.grs.model.ComplainHistory;
 import com.kit.grs.repository.BaseEntityManager;
+import com.kit.grs.util.CalendarUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -23,9 +24,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.YearMonth;
 import java.util.*;
 
 @Slf4j
@@ -96,10 +95,10 @@ public class GrievanceMigratorESService {
 
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getCreated_at());
+                        his.setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                     }
                     if ((his.getCurrentStatus().equalsIgnoreCase("RETAKE")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getCreated_at());
+                        his.setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                     }
                 }
                 histories.add(getHistory(complain, "FORWARDED_OUT", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getFrom_office_id()));
@@ -110,7 +109,7 @@ public class GrievanceMigratorESService {
             if (Utils.isInList(movements.get(j).getAction(), "CLOSED_ACCUSATION_INCORRECT", "CLOSED_ACCUSATION_PROVED", "CLOSED_ANSWER_OK", "CLOSED_OTHERS", "REJECTED")) {
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("RETAKE")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getCreated_at());
+                        his.setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                     }
 
                 }
@@ -122,7 +121,7 @@ public class GrievanceMigratorESService {
             if (movements.get(j).getAction().equalsIgnoreCase("APPEAL")) {
                 for (ComplainHistory his : histories) {
                     if (his.getCurrentStatus().equalsIgnoreCase("NEW") && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getCreated_at());
+                        his.setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                     }
                 }
                 histories.add(getHistory(complain, "APPEAL", movements.get(j).getCreated_at(), null, movements.get(j).getTo_office_id()));
@@ -132,7 +131,7 @@ public class GrievanceMigratorESService {
                 histories.add(getHistory(complain, "APPEAL_CLOSED", movements.get(j).getCreated_at(), movements.get(j).getCreated_at(), movements.get(j).getTo_office_id()));
                 for (ComplainHistory his : histories) {
                     if ((his.getCurrentStatus().equalsIgnoreCase("NEW") || his.getCurrentStatus().equalsIgnoreCase("APPEAL")) && his.getClosedAt() == null) {
-                        his.setClosedAt(movements.get(j).getCreated_at());
+                        his.setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                     }
                 }
                 continue;
@@ -145,7 +144,7 @@ public class GrievanceMigratorESService {
                 if(!flagClosedAt){
                     for (int m=0;m<histories.size();m++) {
                         if (histories.get(m).getCurrentStatus().equalsIgnoreCase("NEW") && histories.get(m).getOfficeId().equals(movements.get(j).getTo_office_id())) {
-                            histories.get(m).setClosedAt(movements.get(j).getCreated_at());
+                            histories.get(m).setClosedAt(CalendarUtil.truncateDate(movements.get(j).getCreated_at()));
                             flagClosedAt = true;
                         }
                     }
@@ -174,8 +173,12 @@ public class GrievanceMigratorESService {
         ComplainHistory history = new ComplainHistory();
         history.setGrievanceType(complain.getGrievance_type());
         history.setComplainId(complain.getId());
-        history.setCreatedAt(createdAt);
-        history.setClosedAt(closedAt);
+        if(createdAt != null){
+            history.setCreatedAt(CalendarUtil.truncateDate(createdAt));
+        }
+        if(closedAt != null){
+            history.setClosedAt(CalendarUtil.truncateDate(closedAt));
+        }
         history.setCurrentStatus(status);
         history.setCustomLayer(complain.getCustom_layer());
         history.setLayerLevel(complain.getLayer_level());
